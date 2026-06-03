@@ -1,0 +1,50 @@
+Act as an Elite Full-Stack Mobile Software Engineer and Lead UI/UX Systems Architect. Build a production-ready, ultra-premium, dark-themed Rider/Driver App Platform. The entire application must be highly optimized for zero-latency, slow network resilience (2G/3G), and extreme information density.
+
+CRITICAL INSTRUCTION FOR THEME: Do NOT introduce any new or random colors. Strictly detect and inherit the exact color palette, dark tones, semantic colors, and premium background shades already defined and currently used in the existing application design to maintain absolute visual consistency.
+
+Choose the most appropriate modern stack for a high-performance app (e.g., React with Tailwind CSS/Vite for a web-app, or full TypeScript framework setup inside Replit) to deploy a working production setup.
+
+---
+
+### 1. CORE VISUAL THEME & DESIGN SYSTEM (TACTICAL DASHBOARD & GLASSMORPHISM)
+Implement a hybrid design language balancing "Tactical Dashboard" (high density, high contrast) and "Dynamic Glassmorphism" (premium blurred layers).
+- Background Layering: Maintain the exact pre-existing low-fatigue dark base tones to avoid outdoor glare and minimize driver eye-strain.
+- Accent System: Utilize the exact current brand semantic accent colors for operations (success states, system warnings, surge indicators, and navigation metrics).
+- Typography: Strict, high-scannability monospace/sans serif scales inherited from the existing codebase. Every piece of text must be readable at a glance from 2 feet away while moving.
+
+---
+
+### 2. ARCHITECTURAL IMMUNITY & EDGE CASE FIXES (BACKEND & STATE)
+You must write production-grade code that natively addresses and mathematically neutralizes the following vulnerabilities:
+- Anti-Double-Click Lock: Implement an atomic state locker (simulating Redis/Mutex behavior or localized atomic memory locks) on crucial endpoints like "Accept Ride" or "Cash Out". If clicked multiple times under heavy network lag, the app must reject all concurrent invocations after the first one and show an instantaneous UI micro-state response.
+- Tunnel-Exit Sync (Network Resiliency): Implement a local-first queue system (using LocalStorage / IndexedDB or reactive local states). If the rider loses connection, the app must buffer location frames and order mutations locally. Upon reconnection, it must run a throttle/debounce mechanism to prevent a self-DoS surge attack on the backend.
+- Pocket Ghost-Touch Prevention: Critical actions (Accepting an order, dropping off a package, cashing out) must NOT be simple buttons. They must use a directional swipe gesture component or a 2-second continuous long-press interaction to prevent accidental pocket-touches or raindrops from triggering actions.
+
+---
+
+### 3. COMPLETE SCENARIO & PAGE HARMONIZATION
+Build and link 4 core screens with absolute architectural continuity. Every screen must perfectly mirror the existing app colors:
+
+A. RIDER HOME SCREEN (The Epicenter):
+- The header must feature the premium dynamic glassmorphism area with active rider metrics (Shift total, current performance rating, online duration tracker).
+- Integrated micro-map view (using a mock SVG interactive flight-path grid layout or leaflet if available) showing active surge areas.
+
+B. ACTIVE ORDERS SCREEN (The Mission View):
+- Split layout architecture: Top 35% focused on clean route telemetry vectors; bottom 65% dense tactical card stack.
+- Displays step-by-step pick-up address, customer contact shortcuts, and dynamic eta calculation.
+
+C. EARNINGS SCREEN (The Financial Center):
+- High-contrast graphical charts showing weekly breakdowns.
+- Instantaneous Cash-Out trigger action protected by the Anti-Double-Click Lock framework.
+
+D. PROFILE & PERFORMANCE SETTINGS (The Identity Hub):
+- Clean, flat matte layout structure for configuring vehicles, switching compliance documentation, and toggling low-bandwidth saving modes.
+
+---
+
+### 4. GOOGLE-SPEED PERFORMANCE & ULTRA-FAST LOADING LAYER
+- Local-First Data Hydration: On initial boot, load instant structural layout states out of the local cache before performing network handshake pings.
+- Lazy-Loading & Dynamic Component Splitting: Defer non-critical modals, sub-tabs, and historical logs until requested. The active route card must always render in under 50ms.
+- Asset Optimization: Zero heavy images. All UI icons must be highly expressive, ultra-lightweight vector iconography (Lucide React style).
+
+Deliver a fully functional, fully integrated, ultra-responsive application code structure. Ensure all state flows (Home -> Active Order -> Earnings Sync -> Profile Config) are fully connected and work flawlessly using the current system design palette. Start writing the application now.
