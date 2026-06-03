@@ -51,12 +51,15 @@ import { ProfilePenaltyHistory } from "../components/profile/ProfilePenaltyHisto
 import { getRiderTier, getInitials } from "../components/home/HomeHeader";
 import { ProfileReviews } from "../components/profile/ProfileReviews";
 import { ProfileSettings } from "../components/profile/ProfileSettings";
+import { TacticalProfileHeader } from "../components/profile/TacticalProfileHeader";
 import { SafeImage } from "../components/ui/SafeImage";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/rider-auth";
 import { usePlatformConfig } from "../lib/useConfig";
 import { useLanguage } from "../lib/useLanguage";
 import { useTheme } from "../lib/useTheme";
+import { useLocalFirst } from "../lib/hooks/useLocalFirst";
+import { useNetworkStatus } from "../lib/hooks/useNetworkQueue";
 import { BANKS, CITIES_FALLBACK, VEHICLE_LABELS } from "../lib/constants";
 const log = createLogger("[Profile]");
 
@@ -954,6 +957,16 @@ export default function Profile() {
     return "•••• " + acc.slice(-4);
   }, []);
 
+  const { isSlow } = useNetworkStatus();
+
+  /* Local-first hydration: load cached profile data immediately */
+  const localProfile = useLocalFirst({
+    key: "rider-profile",
+    fetcher: async () => user,
+    staleMs: 60_000,
+    autoFetch: false,
+  });
+
   if (authLoading) return <SkeletonProfile />;
 
   return (
@@ -979,32 +992,14 @@ export default function Profile() {
         </div>
       )}
 
-      <div
-        className="relative border-b border-border bg-page-bg px-5 pb-4"
-        style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.5rem)" }}
-      >
-        <div className="relative mx-auto max-w-2xl mb-2 flex items-center justify-between">
-          <div>
-            <p className="mb-1 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-              {T("riderProfileSettings")}
-            </p>
-            <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
-              {T("myAccountTitle")}
-            </h1>
-          </div>
-          <Link
-            href="/notifications"
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-glass text-foreground transition-colors active:bg-glass-raised"
-          >
-            <Bell size={18} />
-            {unread > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-error text-[9px] font-extrabold text-white shadow-sm">
-                {unread > 9 ? "9+" : unread}
-              </span>
-            )}
-          </Link>
-        </div>
-      </div>
+      <TacticalProfileHeader
+        name={user?.name}
+        avatar={user?.avatar}
+        rating={user?.stats?.rating ?? null}
+        totalDeliveries={totalDeliveries}
+        totalEarnings={fc(totalEarnings, currency)}
+        currency={currency}
+      />
 
       <div className="max-w-2xl mx-auto space-y-4 px-4 pb-4">
 

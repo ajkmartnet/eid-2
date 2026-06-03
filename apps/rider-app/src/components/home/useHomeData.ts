@@ -13,6 +13,7 @@ import { useVerificationGate } from "../../lib/VerificationGateContext";
 import { useNetworkQuality, getPollingIntervalForTier } from "../../hooks/useNetworkQuality";
 import { recordUsage } from "../../lib/featureGate";
 import { enqueueAction } from "../../lib/offline/queueManager";
+import { useAtomicLock } from "../../lib/hooks/useAtomicLock";
 import {
   addDismissed,
   clearAllDismissed,
@@ -181,6 +182,7 @@ export function useHomeData(): UseHomeDataReturn {
   const T = useCallback((key: TranslationKey) => tDual(key, language), [language]);
   const currency = config.platform.currencySymbol ?? "Rs.";
   const qc = useQueryClient();
+  const { withLock: withAcceptLock } = useAtomicLock("accept_action");
 
   const [toggling, setToggling] = useState(false);
   const [tabVisible, setTabVisible] = useState(!document.hidden);
@@ -1037,23 +1039,25 @@ export function useHomeData(): UseHomeDataReturn {
       return;
     }
     void runWithBiometricGate(() => {
-      /* Optimistic update: immediately set accepting state BEFORE mutation to prevent double-click */
-      setAcceptingOrderId(id);
-      if (isNetworkOffline) {
-        /* Queue for offline replay — the request will auto-retry when connection returns.
-           The card will show a "Queued" badge via the isActionQueued helper. */
-        enqueueAction("accept_order", id, {}).then(() => {
-          toast({ title: "Order queued — will send when you are back online" });
-        }).catch(() => {
-          setAcceptingOrderId(null);
+      withAcceptLock(() => {
+        /* Optimistic update: immediately set accepting state BEFORE mutation to prevent double-click */
+        setAcceptingOrderId(id);
+        if (isNetworkOffline) {
+          /* Queue for offline replay — the request will auto-retry when connection returns.
+             The card will show a "Queued" badge via the isActionQueued helper. */
+          enqueueAction("accept_order", id, {}).then(() => {
+            toast({ title: "Order queued — will send when you are back online" });
+          }).catch(() => {
+            setAcceptingOrderId(null);
+          });
+          return;
+        }
+        acceptOrderMut.mutate(id, {
+          onSuccess: () => {
+            if (user?.id) recordUsage(user.id, "accept_order");
+          },
+          onSettled: () => setAcceptingOrderId(null)
         });
-        return;
-      }
-      acceptOrderMut.mutate(id, {
-        onSuccess: () => {
-          if (user?.id) recordUsage(user.id, "accept_order");
-        },
-        onSettled: () => setAcceptingOrderId(null)
       });
     });
   };
@@ -1067,23 +1071,25 @@ export function useHomeData(): UseHomeDataReturn {
       return;
     }
     void runWithBiometricGate(() => {
-      /* Optimistic update: immediately set accepting state BEFORE mutation to prevent double-click */
-      setAcceptingId(id);
-      if (isNetworkOffline) {
-        /* Queue for offline replay — the request will auto-retry when connection returns.
-           The card will show a "Queued" badge via the isActionQueued helper. */
-        enqueueAction("accept_ride", id, {}).then(() => {
-          toast({ title: "Ride queued — will send when you are back online" });
-        }).catch(() => {
-          setAcceptingId(null);
+      withAcceptLock(() => {
+        /* Optimistic update: immediately set accepting state BEFORE mutation to prevent double-click */
+        setAcceptingId(id);
+        if (isNetworkOffline) {
+          /* Queue for offline replay — the request will auto-retry when connection returns.
+             The card will show a "Queued" badge via the isActionQueued helper. */
+          enqueueAction("accept_ride", id, {}).then(() => {
+            toast({ title: "Ride queued — will send when you are back online" });
+          }).catch(() => {
+            setAcceptingId(null);
+          });
+          return;
+        }
+        acceptRideMut.mutate(id, {
+          onSuccess: () => {
+            if (user?.id) recordUsage(user.id, "accept_ride");
+          },
+          onSettled: () => setAcceptingId(null)
         });
-        return;
-      }
-      acceptRideMut.mutate(id, {
-        onSuccess: () => {
-          if (user?.id) recordUsage(user.id, "accept_ride");
-        },
-        onSettled: () => setAcceptingId(null)
       });
     });
   };

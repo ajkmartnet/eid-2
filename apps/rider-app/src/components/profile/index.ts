@@ -1,0 +1,1 @@
+export { TacticalProfileHeader } from "./TacticalProfileHeader";

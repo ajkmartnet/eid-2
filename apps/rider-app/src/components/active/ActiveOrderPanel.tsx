@@ -19,6 +19,7 @@ import { type ChangeEvent, type RefObject, useState } from "react";
 import { toast } from "../../hooks/use-toast";
 import { SignaturePad } from "./SignaturePad";
 import { SafeImage } from "../../components/ui/SafeImage";
+import { useAtomicLock } from "../../lib/hooks/useAtomicLock";
 import {
   CallButton,
   ChatButton,
@@ -116,6 +117,7 @@ export function ActiveOrderPanel({
 }: ActiveOrderPanelProps) {
   const [proofMode, setProofMode] = useState<"photo" | "signature">("photo");
   const [showSignaturePad, setShowSignaturePad] = useState(false);
+  const { withLock } = useAtomicLock("order_actions");
   const idRaw = order.id;
   if (typeof idRaw !== "string" || !idRaw) {
     return (
@@ -566,7 +568,7 @@ export function ActiveOrderPanel({
             )}
 
             <button
-              onClick={() => handleMarkDelivered(id)}
+              onClick={() => withLock(() => handleMarkDelivered(id))}
               disabled={updateOrderMut.isPending || proofUploading}
               onTouchStart={() => setPressedBtn("deliver")}
               onTouchEnd={() => setPressedBtn(null)}

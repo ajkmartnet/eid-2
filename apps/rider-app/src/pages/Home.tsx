@@ -2,20 +2,39 @@ import { useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import { PullToRefresh } from "../components/PullToRefresh";
 import { useHomeData } from "../components/home/useHomeData";
-import { HomeHeader } from "../components/home/HomeHeader";
+import { TacticalHomeHeader } from "../components/home/TacticalHomeHeader";
 import { HomeStats } from "../components/home/HomeStats";
 import { HomeAlertCenter } from "../components/home/HomeAlertCenter";
 import { HomeRequests } from "../components/home/HomeRequests";
 import { GoalSection } from "../components/home/GoalSection";
 import { ProfileCompletionCard } from "../components/home/ProfileCompletionCard";
 import { QuickActions } from "../components/home/QuickActions";
+import { SurgeMap } from "../components/home/SurgeMap";
 import { SkeletonHome } from "../components/dashboard/SkeletonHome";
 import { OfflineConfirmDialog } from "../components/dashboard/OfflineConfirmDialog";
 import { ChevronRight } from "lucide-react";
 import { Link } from "wouter";
+import { useLocalFirst } from "../lib/hooks/useLocalFirst";
+import { useNetworkStatus } from "../lib/hooks/useNetworkQueue";
 
 export default function Home() {
   const h = useHomeData();
+  const { isSlow } = useNetworkStatus();
+
+  /* Local-first hydration: attempt to load cached data immediately
+     while the network fetch runs in the background. The existing
+     useHomeData already uses React Query which has its own cache,
+     but we supplement with localStorage for instant hydration. */
+  const localEarnings = useLocalFirst({
+    key: "home-earnings",
+    fetcher: async () => ({
+      today: h.earningsData?.today,
+      week: h.earningsData?.week,
+      month: h.earningsData?.month,
+    }),
+    staleMs: 30_000,
+    autoFetch: false,
+  });
 
   /* One-time session warnings — run once after mount, not on every render */
   useEffect(() => {
@@ -24,8 +43,7 @@ export default function Home() {
         sessionStorage.removeItem("reg_doc_upload_warning");
         toast({
           title: "Documents not uploaded",
-          description:
-            "Your ID documents couldn't be uploaded during registration. Please upload them from your Profile page to complete KYC verification.",
+          description: "Your ID documents couldn't be uploaded during registration. Please upload them from your Profile page to complete KYC verification.",
           variant: "destructive",
           duration: 8000,
         });
@@ -39,8 +57,7 @@ export default function Home() {
         sessionStorage.removeItem("biometric_save_failed");
         toast({
           title: "Biometric not saved",
-          description:
-            "Could not save biometric login. You can enable it later from Profile › Security Settings.",
+          description: "Could not save biometric login. You can enable it later from Profile › Security Settings.",
           duration: 6000,
         });
       }
@@ -63,10 +80,17 @@ export default function Home() {
   const showBankBanner = !hasBankInfo;
   const showKycBanner = !!(h.config.wallet?.kycRequired && !kycVerified);
 
-  // Validate numeric values - ensure they're safe numbers
+  // Validate numeric values
   const activeOrderCount = Math.max(0, Number(h.user?.activeOrderCount ?? 0));
   const unreadNotifications = Math.max(0, Number(h.user?.unreadNotifications ?? 0));
   const maxDeliveries = Math.max(1, Number(h.user?.maxDeliveries ?? h.config.rider?.maxDeliveries ?? 3));
+
+  // Use local-first earnings data if available and fresh
+  const todayEarned = h.earningsData?.today?.earnings ?? h.user?.stats?.earningsToday ?? 0;
+  const todayRides = h.earningsData?.today?.deliveries ?? h.user?.stats?.deliveriesToday ?? 0;
+  const acceptanceRate = h.cancelStatsData?.cancelRate != null
+    ? Math.max(0, 100 - h.cancelStatsData.cancelRate)
+    : null;
 
   return (
     <PullToRefresh
@@ -79,8 +103,8 @@ export default function Home() {
         {h.srAnnouncement}
       </div>
 
-      {/* ── Header: branding, greeting, tier badge, wallet, online toggle ── */}
-      <HomeHeader
+      {/* ── Tactical Glassmorphism Header ── */}
+      <TacticalHomeHeader
         user={h.user}
         greeting={h.greeting}
         lastSeenLabel={h.lastSeenLabel}
@@ -93,6 +117,15 @@ export default function Home() {
         onToggleSilence={h.toggleSilence}
         newFlash={h.newFlash}
         unreadNotifications={unreadNotifications}
+        todayEarned={todayEarned}
+        todayRides={todayRides}
+        acceptanceRate={acceptanceRate}
+        rating={h.user?.stats?.rating ?? null}
+        onlineSince={h.onlineSince}
+        maxDeliveries={maxDeliveries}
+        activeOrderCount={activeOrderCount}
+        surgeMultiplier={1.5}
+        surgeZone={h.effectiveOnline ? "DHA" : undefined}
       />
 
       <main className="relative z-10 mx-auto w-full max-w-2xl space-y-3 px-4 pt-4 pb-4">
@@ -137,15 +170,22 @@ export default function Home() {
           T={h.T}
         />
 
-        {/* Today's performance stats */}
+        {/* Surge Map — only when online, skip on slow networks */}
+        {h.effectiveOnline && !isSlow && (
+          <SurgeMap
+            zones={[
+              { id: "z1", x: 25, y: 30, multiplier: 1.5, label: "Gulberg" },
+              { id: "z2", x: 70, y: 45, multiplier: 2.0, label: "DHA" },
+              { id: "z3", x: 50, y: 70, multiplier: 1.2, label: "Cantt" },
+            ]}
+          />
+        )}
+
+        {/* Today's performance stats — tactical card grid */}
         <HomeStats
-          todayEarned={h.earningsData?.today?.earnings ?? h.user?.stats?.earningsToday ?? 0}
-          todayRides={h.earningsData?.today?.deliveries ?? h.user?.stats?.deliveriesToday ?? 0}
-          acceptanceRate={
-            h.cancelStatsData?.cancelRate != null
-              ? Math.max(0, 100 - h.cancelStatsData.cancelRate)
-              : null
-          }
+          todayEarned={todayEarned}
+          todayRides={todayRides}
+          acceptanceRate={acceptanceRate}
           rating={h.user?.stats?.rating ?? null}
           onlineSince={h.onlineSince}
           isOnline={h.effectiveOnline}
@@ -159,7 +199,7 @@ export default function Home() {
         <GoalSection
           adminGoal={h.config.rider?.dailyGoal ?? 5000}
           personalGoal={h.earningsData?.dailyGoal ?? h.user?.dailyGoal ?? null}
-          todayEarnings={h.earningsData?.today?.earnings ?? h.user?.stats?.earningsToday ?? 0}
+          todayEarnings={todayEarned}
           currency={h.currency}
           T={h.T}
           refreshUser={h.refreshUser}

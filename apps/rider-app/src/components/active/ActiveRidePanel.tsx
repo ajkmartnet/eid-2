@@ -2,6 +2,7 @@ import { ArrowDown, Bike, Camera, Car, CheckCircle, ChevronRight, MapPin, Messag
 import { useState } from "react";
 import { toast } from "../../hooks/use-toast";
 import { SafeImage } from "../../components/ui/SafeImage";
+import { useAtomicLock } from "../../lib/hooks/useAtomicLock";
 import {
   DropoffEtaBadge,
   EstimatedArrivalBadge,
@@ -80,6 +81,7 @@ export function ActiveRidePanel({
 }: ActiveRidePanelProps) {
   const [proofMode, setProofMode] = useState<"photo" | "signature">("photo");
   const [showSignaturePad, setShowSignaturePad] = useState(false);
+  const { withLock } = useAtomicLock("ride_actions");
   const idRaw = ride.id;
   if (typeof idRaw !== "string" || !idRaw) {
     return (
@@ -443,23 +445,25 @@ export function ActiveRidePanel({
         <div className="flex gap-2 pt-1">
           {status === "accepted" && (
             <button
-              onClick={() => {
-                if (navigator.geolocation) {
-                  navigator.geolocation.getCurrentPosition(
-                    (pos) =>
-                      updateRideMut.mutate({
-                        id,
-                        status: "arrived",
-                        lat: pos.coords.latitude,
-                        lng: pos.coords.longitude,
-                      }),
-                    () => updateRideMut.mutate({ id, status: "arrived" }),
-                    { enableHighAccuracy: true, timeout: 5000 }
-                  );
-                } else {
-                  updateRideMut.mutate({ id, status: "arrived" });
-                }
-              }}
+              onClick={() =>
+                withLock(() => {
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                      (pos) =>
+                        updateRideMut.mutate({
+                          id,
+                          status: "arrived",
+                          lat: pos.coords.latitude,
+                          lng: pos.coords.longitude,
+                        }),
+                      () => updateRideMut.mutate({ id, status: "arrived" }),
+                      { enableHighAccuracy: true, timeout: 5000 }
+                    );
+                  } else {
+                    updateRideMut.mutate({ id, status: "arrived" });
+                  }
+                })
+              }
               disabled={updateRideMut.isPending}
               onTouchStart={() => setPressedBtn("arrived")}
               onTouchEnd={() => setPressedBtn(null)}
@@ -485,7 +489,7 @@ export function ActiveRidePanel({
             )}
           {status === "arrived" && (ride as { otpVerified?: boolean }).otpVerified && (
             <button
-              onClick={() => updateRideMut.mutate({ id, status: "in_transit" })}
+              onClick={() => withLock(() => updateRideMut.mutate({ id, status: "in_transit" }))}
               disabled={updateRideMut.isPending}
               onTouchStart={() => setPressedBtn("start")}
               onTouchEnd={() => setPressedBtn(null)}
@@ -496,7 +500,7 @@ export function ActiveRidePanel({
           )}
           {status === "in_transit" && (
             <button
-              onClick={() => void handleCompleteRide(id)}
+              onClick={() => withLock(() => void handleCompleteRide(id))}
               disabled={updateRideMut.isPending || rideProofUploading}
               onTouchStart={() => setPressedBtn("complete")}
               onTouchEnd={() => setPressedBtn(null)}

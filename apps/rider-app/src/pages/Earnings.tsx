@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import EarningsBarChart from "../components/earnings/EarningsBarChart";
+import { TacticalEarningsHeader } from "../components/earnings/TacticalEarningsHeader";
+import { TacticalCashOut } from "../components/earnings/TacticalCashOut";
 import { useLocation } from "wouter";
 import { PullToRefresh } from "../components/PullToRefresh";
 import { ErrorState } from "../components/ui/ErrorState";
@@ -41,6 +43,8 @@ import { api } from "../lib/api";
 import { useAuth } from "../lib/rider-auth";
 import { usePlatformConfig } from "../lib/useConfig";
 import { useLanguage } from "../lib/useLanguage";
+import { useLocalFirst } from "../lib/hooks/useLocalFirst";
+import { useNetworkStatus } from "../lib/hooks/useNetworkQueue";
 
 type RideKindFilter = "all" | "food" | "parcel" | "rides";
 
@@ -411,6 +415,7 @@ export default function Earnings() {
   const { user, refreshUser } = useAuth();
   const { config } = usePlatformConfig();
   const { language } = useLanguage();
+  const { isSlow } = useNetworkStatus();
   const T = (key: Parameters<typeof tDual>[0]) => tDual(key, language);
   const currency = config.platform.currencySymbol ?? "Rs.";
   const formatCurrency = (n: string | number | null | undefined) =>
@@ -418,6 +423,14 @@ export default function Earnings() {
   const riderKeepPct = config.rider?.keepPct ?? config.finance.riderEarningPct ?? 80;
   const [period, setPeriod] = useState<Period>("week");
   const qc = useQueryClient();
+
+  /* Local-first hydration: load cached earnings data immediately */
+  const localEarnings = useLocalFirst({
+    key: "rider-earnings",
+    fetcher: async () => data,
+    staleMs: 60_000,
+    autoFetch: false,
+  });
 
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [goalInput, setGoalInput] = useState("");
@@ -484,6 +497,15 @@ export default function Earnings() {
         : rating >= 4.0
           ? T("riderRatingGood")
           : T("riderRatingNeedsWork");
+
+  const walletBalance = walletChartData?.balance ?? 0;
+  const bankLinked = !!(user?.bankName && user?.bankAccount);
+
+  const handleCashOut = useCallback(async () => {
+    await api.withdrawWallet({ amount: walletBalance });
+    await qc.invalidateQueries({ queryKey: ["rider-earnings-chart-wallet"] });
+    await qc.invalidateQueries({ queryKey: ["rider-pending-withdrawals"] });
+  }, [walletBalance, qc]);
 
   const PERIOD_TABS: { key: Period; label: string }[] = [
     { key: "today", label: T("today") },
@@ -560,40 +582,14 @@ export default function Earnings() {
 
   return (
     <PullToRefresh onRefresh={handlePullRefresh} className="min-h-screen bg-page-bg">
-      <div
-        className="page-header-gradient relative overflow-hidden rounded-b-[2rem] bg-card px-5 pb-8"
-        style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.5rem)" }}
-      >
-        <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-success/[0.04]" />
-        <div className="absolute bottom-10 -left-16 h-56 w-56 rounded-full bg-foreground/[0.02]" />
-        <div className="relative mx-auto max-w-2xl">
-          <p className="mb-1 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-            {T("incomePerformance")}
-          </p>
-          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">{T("earnings")}</h1>
-
-          <div className="mt-5 rounded-2xl border border-border bg-card p-5 shadow-lg">
-            <p className="flex items-center gap-1.5 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-              <Wallet size={13} /> {T("walletBalance")}
-            </p>
-            <p className="mt-2 text-[28px] leading-tight font-extrabold text-foreground">
-              {formatCurrency(user?.walletBalance ?? "0")}
-            </p>
-            <p className="mt-1 text-[11px] text-muted-foreground">{T("earningsAfterDelivery")}</p>
-            {pendingWithdrawTotal > 0 && (
-              <p className="mt-1.5 text-[11px] font-semibold text-warning">
-                Pending payout: {formatCurrency(pendingWithdrawTotal)}
-              </p>
-            )}
-            <button
-              onClick={() => navigate("/wallet")}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand py-3 text-sm font-black text-black active:opacity-80 transition-opacity"
-            >
-              <Wallet size={15} /> Withdraw <ArrowRight size={15} />
-            </button>
-          </div>
-        </div>
-      </div>
+      <TacticalEarningsHeader
+        totalEarnings={formatCurrency(totalEarnings)}
+        todayEarnings={formatCurrency(data?.today?.earnings || 0)}
+        todayDeliveries={data?.today?.deliveries || 0}
+        rating={rating}
+        ratingLabel={ratingLabel}
+        currency={currency}
+      />
 
       <div className="mx-auto w-full max-w-2xl space-y-4 px-4 pt-4">
         <button
@@ -606,6 +602,15 @@ export default function Earnings() {
           </div>
           <ChevronDown size={14} className="-rotate-90 text-brand" />
         </button>
+
+        <TacticalCashOut
+          walletBalance={walletBalance}
+          currency={currency}
+          formatCurrency={formatCurrency}
+          onCashOut={handleCashOut}
+          pendingWithdrawTotal={pendingWithdrawTotal}
+          disabled={isOffline || !bankLinked}
+        />
 
         <div className="flex gap-1 rounded-full border border-border bg-card p-1 shadow-sm">
           {PERIOD_TABS.map((tab) => (

@@ -1,6 +1,7 @@
 import { createLogger } from "@/lib/logger";
 import { trackEvent } from "@/lib/analytics";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatCurrency as _sharedFcE } from "@workspace/api-zod";
 import { tDual, type TranslationKey } from "@workspace/i18n";
 import { AlertTriangle, Bike, MapPin, MessageSquare, RefreshCw, WifiOff, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -17,6 +18,8 @@ import { useSocket } from "../lib/socket";
 import { uploadProofPhoto } from "../lib/uploadProofPhoto";
 import { getRiderModules, usePlatformConfig } from "../lib/useConfig";
 import { useLanguage } from "../lib/useLanguage";
+import { useLocalFirst } from "../lib/hooks/useLocalFirst";
+import { useNetworkStatus } from "../lib/hooks/useNetworkQueue";
 const log = createLogger("[Active]");
 
 import {
@@ -25,10 +28,12 @@ import {
   haversineDistance,
   RIDE_STEPS,
   SkeletonActive,
+  useElapsedTimer,
 } from "../components/active/ActiveHelpers";
 import { ActiveModals, CancellationReasonModal, PostDeliverySheet } from "../components/active/ActiveModals";
 import { ActiveOrderPanel } from "../components/active/ActiveOrderPanel";
 import { ActiveRidePanel } from "../components/active/ActiveRidePanel";
+import { TacticalActiveHeader, ActiveRouteTelemetry } from "../components/active/TacticalActiveHeader";
 import {
   parseOrderCancelledPayload,
   parseRideCancelledPayload,
@@ -43,6 +48,8 @@ export default function Active() {
   const { language } = useLanguage();
   const T = (key: TranslationKey) => tDual(key, language);
   const currency = config.platform.currencySymbol ?? "Rs.";
+  const formatCurrency = (n: string | number | null | undefined) =>
+    _sharedFcE(n != null ? String(n) : (n as null | undefined), currency);
   const ORDER_LABELS = [T("goToStore"), T("pickedUp"), T("delivered")];
   const RIDE_LABELS = [T("acceptOrder"), T("atPickup"), T("inTransit"), T("done")];
   const [syncFailedCount, setSyncFailedCount] = useState(0);
@@ -51,6 +58,15 @@ export default function Active() {
   const [otpInput, setOtpInput] = useState("");
   const [cancelTarget, setCancelTarget] = useState<"order" | "ride">("order");
   const [proofPhoto, setProofPhoto] = useState<string | null>(null);
+  const { isSlow } = useNetworkStatus();
+
+  /* Local-first hydration: load cached active ride data immediately */
+  const localActive = useLocalFirst({
+    key: "active-ride",
+    fetcher: async () => ({ order, ride }),
+    staleMs: 30_000,
+    autoFetch: false,
+  });
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [proofFileName, setProofFileName] = useState<string>("");
   const [proofUploading, setProofUploading] = useState(false);
@@ -1063,36 +1079,28 @@ export default function Active() {
   const rideStep = ride ? Math.max(0, RIDE_STEPS.indexOf(ride.status)) : 0;
   const startedAt = order?.acceptedAt || ride?.acceptedAt || null;
   const riderEarningPct = config.rides?.riderEarningPct ?? config.finance?.riderEarningPct ?? 0;
+  const elapsedTimer = useElapsedTimer(startedAt);
 
   return (
     <div className="min-h-screen bg-page-bg">
-      {/* Header */}
-      <div
-        className="page-header-gradient relative overflow-hidden rounded-b-[2rem] bg-card px-5 pb-7"
-        style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.5rem)" }}
-      >
-        <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-success/[0.04]" />
-        <div className="absolute bottom-10 -left-16 h-56 w-56 rounded-full bg-foreground/[0.02]" />
-        <div className="absolute top-1/2 left-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/[0.015]" />
-        <div className="relative mx-auto max-w-2xl flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <div className="mb-1.5 flex items-center gap-2">
-              <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-success shadow-sm shadow-green-400" />
-              <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
-                Live
-              </span>
-            </div>
-            <h1 className="text-2xl font-black tracking-tight text-foreground">
-              {order ? T("activeDelivery") : T("activeRide")}
-            </h1>
-            <p className="mt-1 text-sm font-medium text-muted-foreground">
-              {order
-                ? `${order.type} order — ${order.status === "picked_up" || order.status === "out_for_delivery" ? "Delivering to customer" : "Pick up from store"}`
-                : `${ride?.type || "Ride"} ride in progress`}
-            </p>
-          </div>
-          <ElapsedBadge startIso={startedAt} />
-        </div>
+      <TacticalActiveHeader
+        title={order ? T("activeDelivery") : T("activeRide")}
+        subtitle={order
+          ? `${order.type} order — ${order.status === "picked_up" || order.status === "out_for_delivery" ? "Delivering to customer" : "Pick up from store"}`
+          : `${ride?.type || "Ride"} ride in progress`}
+        isLive={true}
+        elapsedLabel={T("elapsed")}
+        elapsedTime={startedAt ? elapsedTimer.label : undefined}
+      />
+
+      {/* Route telemetry — top 35% metrics */}
+      <div className="mx-auto w-full max-w-2xl px-4 pt-2">
+        <ActiveRouteTelemetry
+          distanceKm={order?.distanceKm ?? ride?.distanceKm ?? undefined}
+          etaMinutes={order?.etaMinutes ?? ride?.etaMinutes ?? undefined}
+          riderEarning={order?.riderEarning ? formatCurrency(order.riderEarning) : ride?.riderEarning ? formatCurrency(ride.riderEarning) : undefined}
+          stepLabel={order ? `${orderStep + 1}/3` : `${rideStep + 1}/${RIDE_STEPS.length}`}
+        />
       </div>
 
       {/* Status banners */}
