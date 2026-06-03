@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "../../hooks/use-toast";
 import { SafeImage } from "../../components/ui/SafeImage";
 import { useAtomicLock } from "../../lib/hooks/useAtomicLock";
+import { SwipeActionButton } from "../tactical/SwipeActionButton";
 import {
   DropoffEtaBadge,
   EstimatedArrivalBadge,

@@ -13,9 +13,11 @@ import {
   ClipboardList,
   CreditCard,
   FileText,
+  Loader2,
   Package,
   Pencil,
   Receipt,
+  RefreshCw,
   Share2,
   Star,
   Target,
@@ -624,6 +626,14 @@ export default function Earnings() {
           ))}
         </div>
 
+        {/* Network-aware loading state */}
+        {isSlow && isLoading && (
+          <div className="mx-4 mt-2 flex items-center gap-2 rounded-2xl border border-warning/30 bg-warning/10 px-3.5 py-2.5">
+            <Loader2 size={13} className="flex-shrink-0 animate-spin text-warning" />
+            <p className="text-[11px] font-semibold text-warning">Slow connection — loading earnings...</p>
+          </div>
+        )}
+
         {isLoading ? (
           <SkeletonEarnings />
         ) : isError ? (
@@ -635,6 +645,14 @@ export default function Earnings() {
           />
         ) : (
           <>
+            {/* Fallback to local-first cached data if network is slow/stale */}
+            {isSlow && localEarnings.data && !localEarnings.isFresh && (
+              <div className="mx-4 mb-3 flex items-center gap-2 rounded-2xl border border-brand/20 bg-brand/5 px-3.5 py-2">
+                <RefreshCw size={12} className="flex-shrink-0 text-brand" />
+                <p className="text-[11px] font-semibold text-brand">Showing cached earnings — tap to refresh</p>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
                 <p className="text-xs font-semibold text-muted-foreground">{T("earnings")}</p>

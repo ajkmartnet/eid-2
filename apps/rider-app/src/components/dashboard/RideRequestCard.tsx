@@ -13,6 +13,7 @@ import { memo, useEffect, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import type { Ride } from "../../lib/api";
 import type { PlatformConfig } from "../../lib/useConfig";
+import { SwipeActionButton } from "../tactical/SwipeActionButton";
 import { AcceptCountdown } from "./AcceptCountdown";
 import { RideTypeIcon } from "./Icons";
 import { MiniMap } from "./MiniMap";
@@ -338,17 +339,17 @@ export const RideRequestCard = memo(function RideRequestCard({
               <X size={16} />
             </button>
           )}
-          <button
-            onClick={() => onAccept(r.id)}
+          <SwipeActionButton
+            label={acceptPending ? T("accepting") : T("acceptRide")}
+            onConfirm={() => onAccept(r.id)}
             disabled={
               rideExpired || acceptPending || anyAcceptPending || ignorePending || !!isRestricted
             }
-            className="flex min-h-[48px] flex-1 items-center justify-center gap-1.5 rounded-xl bg-brand py-3 text-sm font-extrabold text-white shadow-md shadow-brand/25 transition-all hover:bg-brand-hover hover:shadow-lg active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:opacity-60"
-            aria-label="Accept ride"
-          >
-            <CheckCircle size={16} />
-            {acceptPending ? T("accepting") : T("acceptRide")}
-          </button>
+            accentColor="brand"
+            executing={acceptPending}
+            icon={<CheckCircle size={16} />}
+            className="flex-1"
+          />
         </div>
       )}
 

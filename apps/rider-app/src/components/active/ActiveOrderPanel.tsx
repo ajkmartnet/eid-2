@@ -20,6 +20,7 @@ import { toast } from "../../hooks/use-toast";
 import { SignaturePad } from "./SignaturePad";
 import { SafeImage } from "../../components/ui/SafeImage";
 import { useAtomicLock } from "../../lib/hooks/useAtomicLock";
+import { SwipeActionButton } from "../tactical/SwipeActionButton";
 import {
   CallButton,
   ChatButton,

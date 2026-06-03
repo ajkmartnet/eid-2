@@ -1105,6 +1105,13 @@ export default function Active() {
 
       {/* Status banners */}
       <div className="mx-auto w-full max-w-2xl">
+      {/* Local-first cached indicator when offline */}
+      {localActive.data && !localActive.isFresh && isOffline && (
+        <div className="mx-4 mt-2 flex items-center gap-2 rounded-2xl border border-brand/20 bg-brand/5 px-3.5 py-2">
+          <RefreshCw size={12} className="flex-shrink-0 text-brand" />
+          <p className="text-[11px] font-semibold text-brand">Cached ride data — will sync when online</p>
+        </div>
+      )}
       {isOffline && (
         <div className="mx-4 mt-3 flex items-center gap-3 rounded-3xl border border-error/40 bg-error/10 p-3.5">
           <div className="flex h-9 w-9 flex-shrink-0 animate-pulse items-center justify-center rounded-xl bg-error/15">
@@ -1123,6 +1130,16 @@ export default function Active() {
           </div>
         </div>
       )}
+      {/* Slow-network warning — distinct from offline */}
+      {isSlow && !isOffline && (
+        <div className="mx-4 mt-2 flex items-center gap-2 rounded-2xl border border-warning/30 bg-warning/10 px-3.5 py-2.5">
+          <WifiOff size={13} className="flex-shrink-0 text-warning" />
+          <p className="text-[11px] font-semibold text-warning">
+            Slow connection — some features may be delayed
+          </p>
+        </div>
+      )}
+
       {(apiUnreachable || isOffline) && data && (
         <div className="mx-4 mt-2 flex items-center gap-2 rounded-2xl border border-warning/30 bg-warning/10 px-3.5 py-2.5">
           <WifiOff size={13} className="flex-shrink-0 text-warning" />

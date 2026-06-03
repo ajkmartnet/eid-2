@@ -28,6 +28,7 @@ import {
   LogOut,
   Mail,
   MapPin,
+  RefreshCw,
   Package,
   Pencil,
   Phone,
@@ -1000,6 +1001,24 @@ export default function Profile() {
         totalEarnings={fc(totalEarnings, currency)}
         currency={currency}
       />
+
+      {/* Slow-network warning */}
+      {isSlow && (
+        <div className="mx-4 mt-2 flex items-center gap-2 rounded-2xl border border-warning/30 bg-warning/10 px-3.5 py-2.5">
+          <WifiOff size={13} className="flex-shrink-0 text-warning" />
+          <p className="text-[11px] font-semibold text-warning">
+            Slow connection — profile updates may take longer
+          </p>
+        </div>
+      )}
+
+      {/* Local-first cached indicator */}
+      {localProfile.data && !localProfile.isFresh && (
+        <div className="mx-4 mt-2 flex items-center gap-2 rounded-2xl border border-brand/20 bg-brand/5 px-3.5 py-2">
+          <RefreshCw size={12} className="flex-shrink-0 text-brand" />
+          <p className="text-[11px] font-semibold text-brand">Cached profile data — refreshing in background</p>
+        </div>
+      )}
 
       <div className="max-w-2xl mx-auto space-y-4 px-4 pb-4">
 
