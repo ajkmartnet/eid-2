@@ -47,6 +47,7 @@ import { usePlatformConfig } from "../lib/useConfig";
 import { useLanguage } from "../lib/useLanguage";
 import { useLocalFirst } from "../lib/hooks/useLocalFirst";
 import { useNetworkStatus } from "../lib/hooks/useNetworkQueue";
+import { TacticalCard } from "../components/tactical/TacticalCard";
 
 type RideKindFilter = "all" | "food" | "parcel" | "rides";
 
@@ -209,11 +210,10 @@ function CompletedRidesList({
   };
 
   return (
-    <div className="rounded-3xl border border-border bg-card shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 bg-card">
+    <TacticalCard glass>
+      <div className="flex items-center justify-between mb-3">
         <p className="flex items-center gap-1.5 text-sm font-bold text-foreground">
-          <Receipt size={14} className="text-foreground" /> Completed Rides
+          <Receipt size={14} className="text-brand" /> Completed Rides
         </p>
       </div>
 
@@ -313,7 +313,7 @@ function CompletedRidesList({
           onClick={() => setSelectedRide(null)}
         >
           <div
-            className="w-full max-w-md rounded-t-3xl bg-card shadow-2xl"
+            className="w-full max-w-md rounded-t-3xl bg-glass shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-center pt-3 pb-1">
@@ -370,9 +370,9 @@ function CompletedRidesList({
               </button>
             </div>
           </div>
-        </div>
+        </TacticalCard>
       )}
-    </div>
+    </TacticalCard>
   );
 }
 
@@ -380,23 +380,23 @@ function SkeletonEarnings() {
   return (
     <>
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-2 rounded-3xl border border-border bg-card p-5 shadow-sm">
+        <TacticalCard glass className="space-y-2 p-5">
           <ShimmerBlock className="h-3 w-16 rounded-full" />
           <ShimmerBlock className="h-8 w-28 rounded-full" />
           <ShimmerBlock className="h-2.5 w-20 rounded-full" />
-        </div>
-        <div className="space-y-2 rounded-3xl border border-border bg-card p-5 shadow-sm">
+        </TacticalCard>
+        <TacticalCard glass accent="success" className="space-y-2 p-5">
           <ShimmerBlock className="h-3 w-16 rounded-full" />
           <ShimmerBlock className="h-8 w-12 rounded-full" />
           <ShimmerBlock className="h-2.5 w-16 rounded-full" />
-        </div>
+        </TacticalCard>
       </div>
-      <div className="space-y-3 rounded-3xl border border-border bg-card p-5 shadow-sm">
+      <TacticalCard glass className="space-y-3 p-5">
         <ShimmerBlock className="h-3 w-24 rounded-full" />
         <ShimmerBlock className="h-3.5 w-full rounded-full" />
         <ShimmerBlock className="h-2.5 w-28 rounded-full" />
-      </div>
-      <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+      </TacticalCard>
+      <TacticalCard glass className="p-5">
         <ShimmerBlock className="mb-3 h-3 w-24 rounded-full" />
         <div className="grid grid-cols-2 gap-3">
           {[0, 1, 2, 3].map((i) => (
@@ -594,9 +594,9 @@ export default function Earnings() {
       />
 
       <div className="mx-auto w-full max-w-2xl space-y-4 px-4 pt-4">
+        <TacticalCard glass accent="brand" interactive onClick={() => navigate("/earnings/summary")}>
         <button
-          onClick={() => navigate("/earnings/summary")}
-          className="flex w-full items-center justify-between rounded-2xl border border-brand/30 bg-brand/10 px-4 py-3 active:opacity-80"
+          className="flex w-full items-center justify-between"
         >
           <div className="flex items-center gap-2.5">
             <BarChart2 size={16} className="text-brand" />
@@ -604,6 +604,7 @@ export default function Earnings() {
           </div>
           <ChevronDown size={14} className="-rotate-90 text-brand" />
         </button>
+        </TacticalCard>
 
         <TacticalCashOut
           walletBalance={walletBalance}
@@ -614,7 +615,7 @@ export default function Earnings() {
           disabled={isOffline || !bankLinked}
         />
 
-        <div className="flex gap-1 rounded-full border border-border bg-card p-1 shadow-sm">
+        <div className="flex gap-1 rounded-full border border-border bg-glass p-1 shadow-sm">
           {PERIOD_TABS.map((tab) => (
             <button
               key={tab.key}
@@ -654,9 +655,9 @@ export default function Earnings() {
             )}
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-                <p className="text-xs font-semibold text-muted-foreground">{T("earnings")}</p>
-                <p className="mt-1 text-3xl font-extrabold text-success">{formatCurrency(periodData.earnings)}</p>
+              <TacticalCard glass accent={periodData.earnings > 0 ? "success" : "none"}>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{T("earnings")}</p>
+                <p className="mt-1 text-3xl font-extrabold text-success font-mono tabular-nums">{formatCurrency(periodData.earnings)}</p>
                 {period === "today" && data?.yesterday != null && (
                   <div className="mt-1 flex items-center gap-1">
                     {data.today.earnings >= data.yesterday.earnings ? (
@@ -681,12 +682,12 @@ export default function Earnings() {
                     {riderKeepPct}% {T("deliveries").toLowerCase()}
                   </p>
                 )}
-              </div>
-              <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-                <p className="text-sm font-medium text-muted-foreground">{T("deliveries")}</p>
-                <p className="mt-1 text-3xl font-extrabold text-foreground">{periodData.deliveries}</p>
+              </TacticalCard>
+              <TacticalCard glass accent="brand">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{T("deliveries")}</p>
+                <p className="mt-1 text-3xl font-extrabold text-foreground font-mono tabular-nums">{periodData.deliveries}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{T("completedLabel")}</p>
-              </div>
+              </TacticalCard>
             </div>
 
             {/* Commission Breakdown — collapsible accordion */}
@@ -694,7 +695,7 @@ export default function Earnings() {
               <Accordion type="single" collapsible>
                 <AccordionItem
                   value="commission"
-                  className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+                  className="overflow-hidden rounded-2xl border border-border bg-glass shadow-sm"
                 >
                   <AccordionTrigger className="px-5 py-4 hover:no-underline">
                     <span className="text-sm font-bold text-foreground">Commission Breakdown</span>
@@ -730,11 +731,11 @@ export default function Earnings() {
         {/* 7-day earnings bar chart */}
         <EarningsBarChart transactions={chartTxs} currency={currency} />
 
-        <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+        <TacticalCard glass>
           <div className="mb-3 flex items-center justify-between">
             <div>
               <p className="flex items-center gap-1.5 text-sm font-bold text-foreground">
-                <Target size={14} className="text-foreground" />
+                <Target size={14} className="text-brand" />
                 {T("dailyGoal")}
                 {isPersonalGoal && (
                   <span className="rounded-full bg-brand px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-black uppercase">
@@ -749,22 +750,22 @@ export default function Earnings() {
             <div className="flex items-center gap-2">
               <button
                 onClick={openGoalModal}
-                className="rounded-xl bg-muted p-1.5 text-muted-foreground transition-colors hover:bg-muted active:bg-muted"
+                className="rounded-xl bg-glass border border-border/40 p-1.5 text-muted-foreground transition-colors active:bg-glass-raised"
                 aria-label="Edit daily goal"
               >
                 <Pencil size={13} />
               </button>
               <div className="text-right">
-                <p className="text-lg font-extrabold text-foreground">{todayPct}%</p>
+                <p className="text-lg font-extrabold text-foreground font-mono tabular-nums">{todayPct}%</p>
                 <p className="text-xs text-muted-foreground">
                   {formatCurrency(data?.today?.earnings || 0)}
                 </p>
               </div>
             </div>
           </div>
-          <div className="h-3.5 w-full overflow-hidden rounded-full bg-muted">
+          <div className="h-3.5 w-full overflow-hidden rounded-full bg-muted/40">
             <div
-              className={`h-3.5 rounded-full transition-all duration-700 ${todayPct >= 100 ? "bg-success" : "bg-muted/40"}`}
+              className={`h-3.5 rounded-full transition-all duration-700 ${todayPct >= 100 ? "bg-success" : "bg-brand/60"}`}
               style={{ width: `${todayPct}%` }}
             />
           </div>
@@ -777,49 +778,49 @@ export default function Earnings() {
               {formatCurrency(dailyGoal - (data?.today?.earnings || 0))} {T("moreToGoal")}
             </p>
           )}
-        </div>
+        </TacticalCard>
 
-        <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+        <TacticalCard glass>
           <p className="mb-3.5 flex items-center gap-1.5 text-sm font-bold text-foreground">
-            <BarChart2 size={14} className="text-foreground" /> {T("performance")}
+            <BarChart2 size={14} className="text-brand" /> {T("performance")}
           </p>
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl bg-background p-4 text-center">
-              <p className="text-2xl font-extrabold text-foreground">{totalDeliveries}</p>
+            <div className="rounded-2xl bg-glass border border-border/40 p-4 text-center">
+              <p className="text-2xl font-extrabold text-foreground font-mono tabular-nums">{totalDeliveries}</p>
               <p className="mt-1 flex items-center justify-center gap-1 text-xs font-semibold text-muted-foreground">
                 <ClipboardList size={11} /> {T("totalDeliveries")}
               </p>
             </div>
-            <div className="rounded-2xl bg-background p-4 text-center">
-              <p className="text-2xl font-extrabold text-foreground">
+            <div className="rounded-2xl bg-glass border border-border/40 p-4 text-center">
+              <p className="text-2xl font-extrabold text-foreground font-mono tabular-nums">
                 {formatCurrency(avgPerDelivery)}
               </p>
               <p className="mt-1 flex items-center justify-center gap-1 text-xs font-semibold text-muted-foreground">
                 <TrendingUp size={11} /> {T("avgPerDelivery")}
               </p>
             </div>
-            <div className="rounded-2xl bg-background p-4 text-center">
-              <p className="text-2xl font-extrabold text-foreground">
+            <div className="rounded-2xl bg-glass border border-border/40 p-4 text-center">
+              <p className="text-2xl font-extrabold text-foreground font-mono tabular-nums">
                 {formatCurrency(totalEarnings)}
               </p>
               <p className="mt-1 flex items-center justify-center gap-1 text-xs font-semibold text-muted-foreground">
                 <CreditCard size={11} /> {T("allTimeEarned")}
               </p>
             </div>
-            <div className="rounded-2xl bg-background p-4 text-center">
+            <div className="rounded-2xl bg-glass border border-border/40 p-4 text-center">
               <div className="flex items-center justify-center gap-1">
-                <p className="text-2xl font-extrabold text-foreground">{rating.toFixed(1)}</p>
+                <p className="text-2xl font-extrabold text-foreground font-mono tabular-nums">{rating.toFixed(1)}</p>
                 <Star size={18} className="fill-yellow-400 text-yellow-400" />
               </div>
               <p className="mt-1 text-xs font-semibold text-muted-foreground">{ratingLabel}</p>
             </div>
           </div>
-        </div>
+        </TacticalCard>
 
         {!isLoading && !isError && periodData.breakdown && (
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <TacticalCard glass>
             <p className="mb-4 flex items-center gap-1.5 text-sm font-bold text-foreground">
-              <BarChart2 size={14} className="text-foreground" /> {T("byServiceType")}
+              <BarChart2 size={14} className="text-brand" /> {T("byServiceType")}
             </p>
             {(() => {
               const bd = periodData.breakdown;
@@ -879,16 +880,16 @@ export default function Earnings() {
                 </div>
               );
             })()}
-          </div>
+          </TacticalCard>
         )}
 
         {!isLoading && (
           <Accordion type="single" collapsible defaultValue="breakdown">
             <AccordionItem
               value="breakdown"
-              className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm"
+              className="overflow-hidden rounded-2xl border border-border bg-glass shadow-sm"
             >
-              <AccordionTrigger className="bg-card px-5 py-4 hover:no-underline">
+              <AccordionTrigger className="bg-glass px-5 py-4 hover:no-underline">
                 <span className="text-sm font-bold text-foreground">
                   {period === "today"
                     ? `${T("today")} Breakdown`
@@ -928,10 +929,10 @@ export default function Earnings() {
         )}
 
         {/* Monthly Tax Summary */}
-        <div className="rounded-3xl border border-border bg-card shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 bg-card">
+        <TacticalCard glass>
+          <div className="flex items-center justify-between mb-2">
             <p className="flex items-center gap-1.5 text-sm font-bold text-foreground">
-              <FileText size={14} className="text-foreground" /> {T("monthlyTaxSummary")}
+              <FileText size={14} className="text-brand" /> {T("monthlyTaxSummary")}
             </p>
             <span className="rounded-full bg-brand px-2 py-0.5 text-[9px] font-bold tracking-wider text-black uppercase">
               {T("lastSixMonths")}
@@ -984,7 +985,7 @@ export default function Earnings() {
                     </button>
 
                     {isOpen && (
-                      <div className="border-t border-border/30 bg-card px-5 pb-4 pt-3">
+                      <div className="border-t border-border/30 bg-glass px-5 pb-4 pt-3">
                         <div className="space-y-2 mb-4">
                           {[
                             { label: "Gross Earnings", value: formatCurrency(m.grossEarnings), color: "text-foreground" },
@@ -1030,7 +1031,7 @@ export default function Earnings() {
               })}
             </div>
           )}
-        </div>
+        </TacticalCard>
 
         {/* Completed Rides List */}
         <CompletedRidesList formatCurrency={formatCurrency} currency={currency} />
@@ -1066,7 +1067,7 @@ export default function Earnings() {
 
       {showGoalModal && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center">
-          <div className="w-full max-w-sm rounded-t-3xl bg-card p-6 shadow-2xl sm:rounded-3xl">
+          <div className="w-full max-w-sm rounded-t-3xl bg-glass p-6 shadow-2xl sm:rounded-3xl">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-extrabold text-foreground">{T("setDailyGoalTitle")}</h3>

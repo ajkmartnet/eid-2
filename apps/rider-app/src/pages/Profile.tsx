@@ -53,6 +53,7 @@ import { getRiderTier, getInitials } from "../components/home/HomeHeader";
 import { ProfileReviews } from "../components/profile/ProfileReviews";
 import { ProfileSettings } from "../components/profile/ProfileSettings";
 import { TacticalProfileHeader } from "../components/profile/TacticalProfileHeader";
+import { TacticalCard } from "../components/tactical/TacticalCard";
 import { SafeImage } from "../components/ui/SafeImage";
 import { api } from "../lib/api";
 import { useAuth } from "../lib/rider-auth";
@@ -1058,7 +1059,7 @@ export default function Profile() {
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
               </div>
             ) : (
-              <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-page-bg bg-card shadow">
+              <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full border-2 border-page-bg bg-glass shadow">
                 <Camera size={11} className="text-foreground/70" />
               </div>
             )}
@@ -1097,52 +1098,62 @@ export default function Profile() {
 
         {/* ── Stats bar ── */}
         <div className="flex flex-row gap-2.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div
-            className="animate-[slideUp_0.4s_ease-out] flex min-w-[90px] flex-1 flex-col items-center rounded-2xl border border-border bg-card p-3.5"
+          <TacticalCard
+            glass
+            className="animate-[slideUp_0.4s_ease-out] flex min-w-[90px] flex-1 flex-col items-center"
             style={{ animationDelay: "0ms", animationFillMode: "both" }}
           >
             <Package size={18} className="text-indigo-400" />
-            <p className="mt-1.5 text-xl font-extrabold text-foreground">{totalDeliveries}</p>
+            <p className="mt-1.5 text-xl font-extrabold text-foreground font-mono tabular-nums">{totalDeliveries}</p>
             <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
               {T("deliveriesLabel")}
             </p>
-          </div>
+          </TacticalCard>
 
-          <div
-            className="animate-[slideUp_0.4s_ease-out] flex min-w-[90px] flex-1 flex-col items-center rounded-2xl border border-border bg-card p-3.5"
+          <TacticalCard
+            glass
+            accent="success"
+            className="animate-[slideUp_0.4s_ease-out] flex min-w-[90px] flex-1 flex-col items-center"
             style={{ animationDelay: "60ms", animationFillMode: "both" }}
           >
             <TrendingUp size={18} className="text-success" />
-            <p className="mt-1.5 text-xl font-extrabold text-success">{fc(totalEarnings, currency)}</p>
+            <p className="mt-1.5 text-xl font-extrabold text-success font-mono tabular-nums">{fc(totalEarnings, currency)}</p>
             <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
               {T("earnedStat")}
             </p>
-          </div>
+          </TacticalCard>
 
-          <Link
-            href="/wallet"
-            className="animate-[slideUp_0.4s_ease-out] flex min-w-[90px] flex-1 flex-col items-center rounded-2xl border border-border bg-card p-3.5 transition-colors active:bg-muted"
+          <TacticalCard
+            glass
+            accent="brand"
+            interactive
+            className="animate-[slideUp_0.4s_ease-out] flex min-w-[90px] flex-1 flex-col items-center"
             style={{ animationDelay: "120ms", animationFillMode: "both" }}
+            onClick={() => {}}
           >
-            <Wallet size={18} className="text-brand" />
-            <p className="mt-1.5 text-xl font-extrabold text-brand">
-              {fc(user?.walletBalance ?? "0", currency)}
-            </p>
-            <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-              {T("walletStat")}
-            </p>
-          </Link>
+            <Link href="/wallet" className="flex flex-col items-center">
+              <Wallet size={18} className="text-brand" />
+              <p className="mt-1.5 text-xl font-extrabold text-brand font-mono tabular-nums">
+                {fc(user?.walletBalance ?? "0", currency)}
+              </p>
+              <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                {T("walletStat")}
+              </p>
+            </Link>
+          </TacticalCard>
 
-          <div
-            className="animate-[slideUp_0.4s_ease-out] flex min-w-[90px] flex-1 flex-col items-center rounded-2xl border border-border bg-card p-3.5"
+          <TacticalCard
+            glass
+            accent="warning"
+            className="animate-[slideUp_0.4s_ease-out] flex min-w-[90px] flex-1 flex-col items-center"
             style={{ animationDelay: "180ms", animationFillMode: "both" }}
           >
             <Star size={18} className="text-warning" />
-            <p className="mt-1.5 text-xl font-extrabold text-warning">{rating.toFixed(1)}</p>
+            <p className="mt-1.5 text-xl font-extrabold text-warning font-mono tabular-nums">{rating.toFixed(1)}</p>
             <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
               {T("ratingStat")}
             </p>
-          </div>
+          </TacticalCard>
         </div>
 
         {/* ── Quality Score Card with SVG ring ── */}
@@ -1156,7 +1167,7 @@ export default function Profile() {
           const scoreTextColor = qualityScore >= 80 ? "text-success" : qualityScore >= 60 ? "text-warning" : "text-error";
           const ratingColor = rating >= 4.5 ? "text-success" : rating >= 3.5 ? "text-warning" : "text-error";
           return (
-            <div className="animate-[slideUp_0.5s_ease-out] rounded-2xl border border-border bg-card p-4">
+            <TacticalCard glass>
               <p className="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Quality Score
               </p>
@@ -1252,9 +1263,11 @@ export default function Profile() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-3.5 transition-transform active:scale-[0.96]"
+                className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-glass p-3.5 transition-transform active:scale-[0.96]"
               >
-                {item.icon}
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-glass border border-border/40">
+                  {item.icon}
+                </div>
                 <span className="text-center text-[11px] font-bold leading-tight text-foreground">
                   {item.label}
                 </span>
@@ -1263,7 +1276,7 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="animate-[slideUp_0.65s_ease-out] overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+        <TacticalCard glass className="animate-[slideUp_0.65s_ease-out] overflow-hidden shadow-sm p-0">
           <div className="flex border-b border-border">
             {(["personal", "vehicle", "bank"] as const).map((tab) => (
               <button
@@ -1692,13 +1705,13 @@ export default function Profile() {
                           label: "Rejected",
                         },
                         none: {
-                          bg: "bg-card border-border",
+                          bg: "bg-glass border-border",
                           badge: "bg-muted text-muted-foreground",
                           icon: <HelpCircle size={10} className="inline" />,
                           label: "Not Submitted",
                         },
                       }[kycStatus] ?? {
-                        bg: "bg-card border-border",
+                        bg: "bg-glass border-border",
                         badge: "bg-muted text-muted-foreground",
                         icon: <HelpCircle size={10} className="inline" />,
                         label: kycStatus,
@@ -1822,7 +1835,7 @@ export default function Profile() {
 
                       if (docsApproved) return null;
                       return (
-                        <div className={`mx-4 my-3 rounded-2xl border p-3.5 transition-colors ${isRejected ? "border-error/30 bg-error/10" : "border-border bg-card"}`}>
+                        <TacticalCard glass accent={isRejected ? "error" : undefined} className={`mx-4 my-3 rounded-2xl transition-colors ${isRejected ? "border-error/30" : "border-border"}`}>
                           <div className="mb-2 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               {isRejected
@@ -1849,7 +1862,7 @@ export default function Profile() {
 
                           {/* Rejection reason banner */}
                           {isRejected && (
-                            <div className="mb-3 rounded-xl border border-error/30 bg-card px-3 py-2.5">
+                            <div className="mb-3 rounded-xl border border-error/30 bg-glass px-3 py-2.5">
                               <div className="mb-1 flex items-center gap-1.5">
                                 <AlertTriangle size={11} className="flex-shrink-0 text-error" />
                                 <p className="text-[10px] font-extrabold uppercase tracking-wider text-error">
@@ -2535,7 +2548,7 @@ export default function Profile() {
                   </div>
                 ) : user?.vehicleType ? (
                   <div className="p-4">
-                    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4">
+                    <TacticalCard glass className="relative overflow-hidden">
                       <div className="absolute top-0 right-0 h-20 w-20 translate-x-1/2 -translate-y-1/2 rounded-full bg-muted/20" />
                       <div className="mb-4 flex items-center justify-between">
                         <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase">
@@ -2571,7 +2584,7 @@ export default function Profile() {
                           </div>
                         )}
                       </div>
-                    </div>
+                    </TacticalCard>
                   </div>
                 ) : (
                   <div className="py-8 text-center">
@@ -2684,7 +2697,7 @@ export default function Profile() {
                   </div>
                 ) : user?.bankName ? (
                   <div className="p-4">
-                    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4">
+                    <TacticalCard glass className="relative overflow-hidden">
                       <div className="absolute top-0 right-0 h-24 w-24 translate-x-1/2 -translate-y-1/2 rounded-full bg-muted/30" />
                       <div className="absolute bottom-0 left-0 h-16 w-16 -translate-x-1/2 translate-y-1/2 rounded-full bg-muted/30" />
                       <div className="mb-4 flex items-center justify-between">
@@ -2706,7 +2719,7 @@ export default function Profile() {
                           <CheckCircle size={9} /> {T("activeVerified")}
                         </span>
                       </div>
-                    </div>
+                    </TacticalCard>
                   </div>
                 ) : (
                   <div className="py-8 text-center">
@@ -2735,7 +2748,7 @@ export default function Profile() {
           onDeleteAccount={handleDeleteAccount}
         />
 
-        <div className="animate-[slideUp_0.75s_ease-out] overflow-hidden rounded-3xl border border-border bg-card">
+        <TacticalCard glass className="animate-[slideUp_0.75s_ease-out] overflow-hidden p-0">
           <button
             onClick={() => setPayoutOpen(!payoutOpen)}
             className="flex w-full items-center justify-between px-5 py-4 transition-colors active:bg-muted"
@@ -2776,7 +2789,7 @@ export default function Profile() {
               ))}
             </div>
           </div>
-        </div>
+        </TacticalCard>
 
         <ProfilePenaltyHistory currency={currency} />
 

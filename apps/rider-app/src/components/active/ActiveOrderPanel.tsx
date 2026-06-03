@@ -21,6 +21,7 @@ import { SignaturePad } from "./SignaturePad";
 import { SafeImage } from "../../components/ui/SafeImage";
 import { useAtomicLock } from "../../lib/hooks/useAtomicLock";
 import { SwipeActionButton } from "../tactical/SwipeActionButton";
+import { TacticalCard } from "../tactical/TacticalCard";
 import {
   CallButton,
   ChatButton,
@@ -158,13 +159,13 @@ export function ActiveOrderPanel({
       />
 
       {/* Order header card */}
-      <div className="animate-[slideUp_0.4s_ease-out] overflow-hidden rounded-3xl border border-border bg-card shadow-lg shadow-black/40">
+      <TacticalCard glass className="animate-[slideUp_0.4s_ease-out] overflow-hidden shadow-lg shadow-black/40">
         <div
           className={`bg-gradient-to-r ${orderTypeGradient(type)} relative flex items-center gap-3 overflow-hidden px-4 py-4`}
         >
-          <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-card/10" />
-          <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-card/5" />
-          <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border border-border bg-card/20 shadow-inner backdrop-blur-md">
+          <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-glass/10" />
+          <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-glass/5" />
+          <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border border-border bg-glass/20 shadow-inner backdrop-blur-md">
             <OrderTypeIcon type={type} />
           </div>
           <div className="relative min-w-0 flex-1">
@@ -192,9 +193,9 @@ export function ActiveOrderPanel({
 
       {/* Step 1 — Go to Store */}
       {status !== "picked_up" && status !== "out_for_delivery" && status !== "delivered" && (
-        <div className="animate-[slideUp_0.5s_ease-out] overflow-hidden rounded-3xl border border-border bg-card shadow-lg shadow-black/40">
+        <TacticalCard glass className="animate-[slideUp_0.5s_ease-out] overflow-hidden shadow-lg shadow-black/40">
           <div className="flex items-center gap-2 bg-gradient-to-r from-warning to-brand-hover px-4 py-3">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-card/20 backdrop-blur-sm">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-glass/20 backdrop-blur-sm">
               <ShoppingCart size={14} className="text-foreground" />
             </div>
             <p className="text-sm font-black tracking-wide text-foreground uppercase">
@@ -224,7 +225,7 @@ export function ActiveOrderPanel({
             </div>
 
             {Array.isArray(order.items) && (order.items as unknown[]).length > 0 && (
-              <div className="rounded-2xl border border-border bg-card p-4">
+              <TacticalCard glass className="rounded-2xl">
                 <p className="mb-3 flex items-center gap-1.5 text-xs font-bold tracking-wider text-muted-foreground uppercase">
                   <Package size={11} /> Items to Collect ({(order.items as unknown[]).length})
                 </p>
@@ -326,7 +327,7 @@ export function ActiveOrderPanel({
               onTouchEnd={() => setPressedBtn(null)}
               className={`flex w-full items-center justify-center gap-2.5 rounded-2xl bg-brand py-4 text-base font-black text-black shadow-lg transition-transform disabled:opacity-60 min-h-[52px] ${pressedBtn === "pickup" ? "scale-[0.97]" : ""}`}
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-card/20">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-glass/20">
                 <Package size={18} />
               </div>
               {T("pickUpOrder")}
@@ -348,9 +349,9 @@ export function ActiveOrderPanel({
 
       {/* Step 2 — Deliver */}
       {(status === "picked_up" || status === "out_for_delivery") && (
-        <div className="animate-[slideUp_0.5s_ease-out] overflow-hidden rounded-3xl border border-border bg-card shadow-lg shadow-black/40">
+        <TacticalCard glass className="animate-[slideUp_0.5s_ease-out] overflow-hidden shadow-lg shadow-black/40">
           <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-card/20 backdrop-blur-sm">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-glass/20 backdrop-blur-sm">
               <Truck size={14} className="text-foreground" />
             </div>
             <p className="text-sm font-black tracking-wide text-foreground uppercase">
@@ -404,7 +405,7 @@ export function ActiveOrderPanel({
             />
 
             {/* Customer contact — full-width row for easy thumb reach */}
-            <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            <TacticalCard glass className="overflow-hidden rounded-2xl">
               <p className="px-4 pt-3 pb-1 text-xs font-bold tracking-wider text-muted-foreground uppercase">
                 Contact Customer
               </p>
@@ -575,7 +576,7 @@ export function ActiveOrderPanel({
               onTouchEnd={() => setPressedBtn(null)}
               className={`flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 py-4 text-lg font-black text-white shadow-lg shadow-green-200 transition-transform disabled:opacity-60 ${pressedBtn === "deliver" ? "scale-[0.97]" : ""}`}
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-card/20">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-glass/20">
                 {proofUploading ? (
                   <RefreshCw size={18} className="animate-spin" />
                 ) : (
@@ -592,7 +593,7 @@ export function ActiveOrderPanel({
             </button>
 
             <div>
-              <div className="flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-xl border-2 border-border bg-card py-3 text-sm font-bold text-muted-foreground opacity-50">
+              <div className="flex w-full cursor-not-allowed items-center justify-center gap-1.5 rounded-xl border-2 border-border bg-glass py-3 text-sm font-bold text-muted-foreground opacity-50">
                 <ChevronRight size={14} className="rotate-180" /> {T("backToStoreStep")}
               </div>
               <p className="mt-1 text-center text-xs text-muted-foreground">

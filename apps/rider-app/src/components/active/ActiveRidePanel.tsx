@@ -4,6 +4,7 @@ import { toast } from "../../hooks/use-toast";
 import { SafeImage } from "../../components/ui/SafeImage";
 import { useAtomicLock } from "../../lib/hooks/useAtomicLock";
 import { SwipeActionButton } from "../tactical/SwipeActionButton";
+import { TacticalCard } from "../tactical/TacticalCard";
 import {
   DropoffEtaBadge,
   EstimatedArrivalBadge,
@@ -107,11 +108,11 @@ export function ActiveRidePanel({
         startedAt={startedAt}
       />
 
-    <div className="animate-[slideUp_0.4s_ease-out] overflow-hidden rounded-3xl border border-border bg-card shadow-lg shadow-black/40">
+    <TacticalCard glass className="animate-[slideUp_0.4s_ease-out] overflow-hidden shadow-lg shadow-black/40">
       <div className="relative flex items-center gap-3 overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-700 px-4 py-4">
-        <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-card/10" />
-        <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-card/5" />
-        <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border border-border bg-card/20 shadow-inner backdrop-blur-md">
+        <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-glass/10" />
+        <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-glass/5" />
+        <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border border-border bg-glass/20 shadow-inner backdrop-blur-md">
           {type === "bike" ? (
             <Bike size={22} className="text-foreground" />
           ) : (
@@ -152,9 +153,9 @@ export function ActiveRidePanel({
 
       <div className="space-y-4 p-4">
         {rideStep >= 0 && (
-          <div className="rounded-2xl border border-border/80 bg-card p-4">
+          <TacticalCard glass className="rounded-2xl border border-border/80">
             <ActiveStepper steps={RIDE_LABELS} currentStep={rideStep} />
-          </div>
+          </TacticalCard>
         )}
 
         <div className="relative">
@@ -174,7 +175,7 @@ export function ActiveRidePanel({
             </div>
           </div>
           <div className="relative z-10 -my-1.5 flex justify-center">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl border-2 border-border bg-card shadow-sm">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl border-2 border-border bg-glass shadow-sm">
               <ArrowDown size={14} className="text-muted-foreground" />
             </div>
           </div>
@@ -507,7 +508,7 @@ export function ActiveRidePanel({
               onTouchEnd={() => setPressedBtn(null)}
               className={`flex flex-1 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 py-4 text-base font-black text-white shadow-lg shadow-green-200 transition-transform disabled:opacity-60 ${pressedBtn === "complete" ? "scale-[0.97]" : ""}`}
             >
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-card/20">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-glass/20">
                 {rideProofUploading ? (
                   <RefreshCw size={17} className="animate-spin" />
                 ) : (

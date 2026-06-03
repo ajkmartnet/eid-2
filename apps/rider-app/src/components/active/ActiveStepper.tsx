@@ -23,7 +23,7 @@ export function ActiveStepper({ steps, currentStep, icons }: ActiveStepperProps)
                     ? "border-success bg-success text-white shadow-md"
                     : active
                       ? "border-brand bg-brand text-black shadow-md ring-4 ring-brand/25"
-                      : "border-border bg-card text-muted-foreground"
+                      : "border-border bg-glass text-muted-foreground"
                 }`}
               >
                 {done ? (

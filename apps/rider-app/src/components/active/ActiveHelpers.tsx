@@ -94,21 +94,21 @@ export function SkeletonActive() {
   return (
     <div className="min-h-screen bg-page-bg">
       <div
-        className="relative overflow-hidden rounded-b-[2rem] page-header-gradient bg-card px-5 pb-8"
+        className="relative overflow-hidden rounded-b-[2rem] page-header-gradient bg-glass px-5 pb-8"
         style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.5rem)" }}
       >
         <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-success/[0.04]" />
         <div className="absolute bottom-10 -left-16 h-56 w-56 rounded-full bg-muted/20" />
         <div className="relative flex items-center justify-between">
           <div className="space-y-2">
-            <SkeletonBlock className="h-7 w-40 !bg-card/10" />
-            <SkeletonBlock className="h-4 w-56 !bg-card/10" />
+            <SkeletonBlock className="h-7 w-40 !bg-glass/10" />
+            <SkeletonBlock className="h-4 w-56 !bg-glass/10" />
           </div>
           <SkeletonBlock className="h-16 w-20 rounded-2xl !bg-muted/20" />
         </div>
       </div>
       <div className="space-y-4 px-4 py-4">
-        <div className="overflow-hidden rounded-3xl bg-card shadow-sm">
+        <div className="overflow-hidden rounded-3xl bg-glass shadow-sm">
           <SkeletonBlock className="h-16 !rounded-none" />
           <div className="space-y-3 p-4">
             <div className="flex items-center justify-between px-4">
@@ -122,7 +122,7 @@ export function SkeletonActive() {
             <SkeletonBlock className="mx-6 h-2" />
           </div>
         </div>
-        <div className="overflow-hidden rounded-3xl bg-card shadow-sm">
+        <div className="overflow-hidden rounded-3xl bg-glass shadow-sm">
           <SkeletonBlock className="h-12 !rounded-none" />
           <div className="space-y-3 p-4">
             <SkeletonBlock className="h-20" />
@@ -189,7 +189,7 @@ export function ElapsedBadge({ startIso }: { startIso?: string | null }) {
       >
         {label}
       </span>
-      <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-card/10">
+      <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-glass/10">
         <div
           className={`h-full rounded-full transition-all duration-1000 ${urgent ? "bg-error/40" : "bg-success"}`}
           style={{ width: `${progress * 100}%` }}

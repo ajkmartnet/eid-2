@@ -20,6 +20,7 @@ import { getRiderModules, usePlatformConfig } from "../lib/useConfig";
 import { useLanguage } from "../lib/useLanguage";
 import { useLocalFirst } from "../lib/hooks/useLocalFirst";
 import { useNetworkStatus } from "../lib/hooks/useNetworkQueue";
+import { TacticalCard } from "../components/tactical/TacticalCard";
 const log = createLogger("[Active]");
 
 import {
@@ -1008,7 +1009,7 @@ export default function Active() {
       <>
         <div className="flex min-h-screen flex-col bg-page-bg">
           <div
-            className="page-header-gradient relative overflow-hidden rounded-b-[2rem] bg-card px-5 pb-10"
+            className="page-header-gradient relative overflow-hidden rounded-b-[2rem] bg-glass px-5 pb-10"
             style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 3.5rem)" }}
           >
             <div className="absolute -top-20 -right-20 h-72 w-72 rounded-full bg-success/[0.04]" />

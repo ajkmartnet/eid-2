@@ -61,7 +61,7 @@ export function PostDeliverySheet({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md animate-[slideUp_0.3s_ease-out] rounded-t-3xl bg-card px-5 pb-8 pt-5 shadow-2xl">
+      <div className="w-full max-w-md animate-[slideUp_0.3s_ease-out] rounded-t-3xl bg-glass px-5 pb-8 pt-5 shadow-2xl">
         <div className="mb-1 flex items-center justify-between">
           <div>
             <p className="text-lg font-black text-foreground">
@@ -200,7 +200,7 @@ export function CancellationReasonModal({
         : "System";
   return (
     <div className="fixed inset-0 z-50 flex animate-[fadeIn_0.2s_ease-out] items-center justify-center bg-black/60 p-4 backdrop-blur-md">
-      <div className="w-full max-w-sm animate-[slideUp_0.3s_ease-out] overflow-hidden rounded-3xl bg-card shadow-2xl">
+      <div className="w-full max-w-sm animate-[slideUp_0.3s_ease-out] overflow-hidden rounded-3xl bg-glass shadow-2xl">
         <div className="flex flex-col items-center gap-3 border-b border-error/30 bg-gradient-to-br from-red-50 to-pink-50 px-6 py-6">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-pink-600 shadow-lg shadow-red-200">
             <UserX className="h-8 w-8 text-foreground" />
@@ -221,7 +221,7 @@ export function CancellationReasonModal({
               <p className="text-sm font-semibold text-error">{reason}</p>
             </div>
           ) : (
-            <div className="rounded-2xl border border-border bg-card px-4 py-3 text-center">
+            <div className="rounded-2xl border border-border bg-glass px-4 py-3 text-center">
               <p className="text-sm text-muted-foreground">No reason was provided.</p>
             </div>
           )}
@@ -313,7 +313,7 @@ export function ActiveModals({
           onClick={() => setShowAdminChat(false)}
         >
           <div
-            className="w-full max-w-md rounded-t-3xl bg-card p-5 shadow-2xl"
+            className="w-full max-w-md rounded-t-3xl bg-glass p-5 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between">
@@ -383,7 +383,7 @@ export function ActiveModals({
       {/* OTP Verification Modal */}
       {showOtpModal && ride && (
         <div className="fixed inset-0 z-50 flex animate-[fadeIn_0.2s_ease-out] items-center justify-center bg-black/60 p-4 backdrop-blur-md">
-          <div className="w-full max-w-sm animate-[slideUp_0.3s_ease-out] overflow-hidden rounded-3xl bg-card shadow-2xl">
+          <div className="w-full max-w-sm animate-[slideUp_0.3s_ease-out] overflow-hidden rounded-3xl bg-glass shadow-2xl">
             <div className="flex flex-col items-center gap-3 border-b border-blue-500/30 bg-gradient-to-br from-blue-50 to-indigo-50 px-6 py-6">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-200">
                 <Shield className="h-8 w-8 text-foreground" />
@@ -464,7 +464,7 @@ export function ActiveModals({
       {/* Cancel Confirm Modal */}
       {showCancelConfirm && (
         <div className="fixed inset-0 z-50 flex animate-[fadeIn_0.2s_ease-out] items-center justify-center bg-black/60 p-4 backdrop-blur-md">
-          <div className="w-full max-w-sm animate-[slideUp_0.3s_ease-out] overflow-hidden rounded-3xl bg-card shadow-2xl">
+          <div className="w-full max-w-sm animate-[slideUp_0.3s_ease-out] overflow-hidden rounded-3xl bg-glass shadow-2xl">
             <div className="flex flex-col items-center gap-3 border-b border-error/30 bg-gradient-to-br from-red-50 to-pink-50 px-6 py-6">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-pink-600 shadow-lg shadow-red-200">
                 <AlertTriangle className="h-8 w-8 text-foreground" />
@@ -517,7 +517,7 @@ export function ActiveModals({
       {/* No Photo Warning Modal */}
       {showNoPhotoWarning && (
         <div className="pointer-events-auto fixed inset-0 z-50 flex animate-[fadeIn_0.15s_ease-out] items-end justify-center bg-black/50">
-          <div className="mx-auto w-full max-w-sm animate-[slideUp_0.2s_ease-out] rounded-t-3xl bg-card px-6 py-6 shadow-2xl">
+          <div className="mx-auto w-full max-w-sm animate-[slideUp_0.2s_ease-out] rounded-t-3xl bg-glass px-6 py-6 shadow-2xl">
             <div className="mb-5 flex flex-col items-center gap-3">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-warning/15">
                 <AlertTriangle size={28} className="text-warning" />

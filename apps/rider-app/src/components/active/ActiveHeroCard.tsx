@@ -59,7 +59,7 @@ export function ActiveHeroCard({
         : (order.deliveryLng as number | null | undefined);
 
     return (
-      <div className="rounded-2xl border border-border/80 bg-card p-4">
+      <div className="rounded-2xl border border-border/80 bg-glass p-4">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ElapsedBadge startIso={startedAt} />
@@ -150,7 +150,7 @@ export function ActiveHeroCard({
         : (ride.pickupLng as number | null | undefined);
 
     return (
-      <div className="rounded-2xl border border-border/80 bg-card p-4">
+      <div className="rounded-2xl border border-border/80 bg-glass p-4">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ElapsedBadge startIso={startedAt} />

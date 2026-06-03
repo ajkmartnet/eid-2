@@ -117,7 +117,7 @@ export function SignaturePad({ onConfirm, onCancel }: SignaturePadProps) {
         </button>
       </div>
 
-      <div className="relative flex-1 bg-card p-4">
+      <div className="relative flex-1 bg-glass p-4">
         <div className="relative h-full overflow-hidden rounded-2xl border-2 border-dashed border-border bg-muted shadow-inner">
           {!hasStrokes && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
